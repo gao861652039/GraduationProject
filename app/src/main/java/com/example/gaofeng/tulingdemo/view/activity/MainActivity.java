@@ -1,24 +1,26 @@
 package com.example.gaofeng.tulingdemo.view.activity;
 
-import android.graphics.Color;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.gaofeng.tulingdemo.R;
-import com.example.gaofeng.tulingdemo.adapter.MyAdapter;
 import com.example.gaofeng.tulingdemo.model.bean.DishBean;
 import com.example.gaofeng.tulingdemo.model.bean.NewsBean;
 import com.example.gaofeng.tulingdemo.model.bean.TextBean;
 import com.example.gaofeng.tulingdemo.model.bean.UrlBean;
+import com.example.gaofeng.tulingdemo.model.eventmsg.TextMsg;
 import com.example.gaofeng.tulingdemo.network.NetWorkService;
 import com.example.gaofeng.tulingdemo.util.NetWorkUtil;
+import com.example.gaofeng.tulingdemo.view.fragment.TextFragment;
 import com.google.gson.Gson;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,9 +31,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.droidlover.xrecyclerview.XRecyclerAdapter;
-import cn.droidlover.xrecyclerview.XRecyclerView;
-import cn.droidlover.xrecyclerview.divider.HorizontalDividerItemDecoration;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,9 +43,6 @@ public class MainActivity extends AppCompatActivity {
     EditText et_user_info;
     @BindView(R.id.tv_homelife)
     TextView tv_homelife;
-    @BindView(R.id.xrecycle)
-    XRecyclerView xRecyclerView;
-    private MyAdapter adapter;
     private List<String> list = new ArrayList<>();
     private List<String> list2 = new ArrayList<>();
     private Retrofit retrofit = NetWorkUtil.getInstance().getRetrofit();
@@ -58,33 +54,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        for (int i = 0; i < 5; i++) {
-            list.add("hhahaah");
-            list2.add("aaaaaa");
-        }
-
-        xRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new MyAdapter(this);
-        adapter.setData(list);
-        xRecyclerView.setAdapter(adapter);
-        xRecyclerView.horizontalDivider(R.color.pink,R.dimen.sa);
-        xRecyclerView.setRefreshEnabled(true);
-        xRecyclerView.useDefLoadMoreView();
-        xRecyclerView.setPage(1,5);
-        xRecyclerView.setOnRefreshAndLoadMoreListener(new XRecyclerView.OnRefreshAndLoadMoreListener() {
-            @Override
-            public void onRefresh() {
-
-            }
-
-            @Override
-            public void onLoadMore(int page) {
-                adapter.addData(list2);
-            }
-        });
-
-
     }
+
 
     @OnClick(R.id.btn_search)
     public void searchHomeLife() {
@@ -115,21 +86,30 @@ public class MainActivity extends AppCompatActivity {
                         case 100000:
                             //文本类解析
                             TextBean textBean = gson.fromJson(text, TextBean.class);
-                            tv_homelife.setText(textBean.getText());
+//                            tv_homelife.setText(textBean.getText());
+                            FragmentManager fm = getSupportFragmentManager();
+                            FragmentTransaction transaction = fm.beginTransaction();
+                            TextFragment tf = new TextFragment();
+                            transaction.replace(R.id.container, tf);
+                            transaction.commitAllowingStateLoss();
+                            EventBus.getDefault().postSticky(new TextMsg(textBean.getText()));
 
                             break;
                         case 308000:
                             //菜品类解析
                             DishBean dishBean = gson.fromJson(text, DishBean.class);
-                            tv_homelife.setText(dishBean.getList().get(0).getInfo());
+//                            tv_homelife.setText(dishBean.getList().get(0).getInfo());
 
+                            EventBus.getDefault().postSticky(dishBean);
+                            startActivity(new Intent(MainActivity.this, NewsActivity.class));
 
                             break;
                         case 302000:
                             //新闻类解析
                             NewsBean newsBean = gson.fromJson(text, NewsBean.class);
-                            tv_homelife.setText(newsBean.getList().get(0).getArticle());
-
+//                            tv_homelife.setText(newsBean.getList().get(0).getArticle());
+                            EventBus.getDefault().postSticky(newsBean);
+                            startActivity(new Intent(MainActivity.this, NewsActivity.class));
 
                             break;
                         case 200000:
