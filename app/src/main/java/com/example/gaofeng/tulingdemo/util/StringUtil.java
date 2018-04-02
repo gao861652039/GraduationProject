@@ -5,12 +5,19 @@ package com.example.gaofeng.tulingdemo.util;
  */
 
 public class StringUtil {
-
-    public static boolean isEmpty(String str){
-          if(null == str || "".equals(str)){
-              return true;
-          }else{
-              return false;
-          }
+    //空判断
+    public static boolean isEmpty(String str) {
+        if (null == str || "".equals(str)) {
+            return true;
+        } else {
+            return false;
+        }
     }
+
+    //获取省市县信息
+    public static String getAddressInfo(String str) {
+        int index = str.indexOf("附近");
+        return str.substring(0, index);
+    }
+
 }

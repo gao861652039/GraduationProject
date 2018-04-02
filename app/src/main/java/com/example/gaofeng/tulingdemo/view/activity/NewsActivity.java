@@ -13,6 +13,7 @@ import com.example.gaofeng.tulingdemo.adapter.DishesAdapter;
 import com.example.gaofeng.tulingdemo.adapter.NewsAdapter;
 import com.example.gaofeng.tulingdemo.model.bean.DishBean;
 import com.example.gaofeng.tulingdemo.model.bean.NewsBean;
+import com.example.gaofeng.tulingdemo.model.bean.UrlBean;
 import com.example.gaofeng.tulingdemo.model.eventmsg.UrlMsg;
 
 import org.greenrobot.eventbus.EventBus;
