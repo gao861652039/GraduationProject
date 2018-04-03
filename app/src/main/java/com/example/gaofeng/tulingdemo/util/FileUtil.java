@@ -1,6 +1,8 @@
 package com.example.gaofeng.tulingdemo.util;
 
+import android.content.Context;
 import android.content.res.AssetManager;
+import android.os.Environment;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,6 +15,24 @@ import java.io.InputStream;
 
 public class FileUtil {
 
+    // 创建一个临时目录，用于复制临时文件，如assets目录下的离线资源文件
+    public static String createTmpDir(Context context) {
+        String sampleDir = "baiduTTS";
+        String tmpDir = Environment.getExternalStorageDirectory().toString() + "/" + sampleDir;
+        if (!FileUtil.makeDir(tmpDir)) {
+            tmpDir = context.getExternalFilesDir(sampleDir).getAbsolutePath();
+            if (!FileUtil.makeDir(sampleDir)) {
+                throw new RuntimeException("create model resources dir failed :" + tmpDir);
+            }
+        }
+        return tmpDir;
+    }
+
+    public static boolean fileCanRead(String filename) {
+        File f = new File(filename);
+        return f.canRead();
+    }
+
     public static boolean makeDir(String dirPath) {
         File file = new File(dirPath);
         if (!file.exists()) {
@@ -22,26 +42,9 @@ public class FileUtil {
         }
     }
 
-    public static String getContentFromAssetsFile(AssetManager assets, String source) {
-        InputStream is = null;
-        FileOutputStream fos = null;
-        String result = "";
-        try {
-            is = assets.open(source);
-            int lenght = is.available();
-            byte[] buffer = new byte[lenght];
-            is.read(buffer);
-            result = new String(buffer, "utf8");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    public static boolean copyFromAssets(AssetManager assets, String source, String dest,
-                                         boolean isCover) throws IOException {
+    public static void copyFromAssets(AssetManager assets, String source, String dest, boolean isCover)
+            throws IOException {
         File file = new File(dest);
-        boolean isCopyed = false;
         if (isCover || (!isCover && !file.exists())) {
             InputStream is = null;
             FileOutputStream fos = null;
@@ -54,7 +57,6 @@ public class FileUtil {
                 while ((size = is.read(buffer, 0, 1024)) >= 0) {
                     fos.write(buffer, 0, size);
                 }
-                isCopyed = true;
             } finally {
                 if (fos != null) {
                     try {
@@ -66,8 +68,6 @@ public class FileUtil {
                     }
                 }
             }
-
         }
-        return isCopyed;
     }
 }
