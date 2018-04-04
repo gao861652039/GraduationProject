@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * 百度语音识别对话框，完成语音识别状态维护，API调用。实现不同样式的对话对话框，只需继承此类
  *
- * @author yangliang02
+ * Created by gaofeng on 2018/4/4
  */
 public abstract class BaiduASRDialog extends Activity {
 

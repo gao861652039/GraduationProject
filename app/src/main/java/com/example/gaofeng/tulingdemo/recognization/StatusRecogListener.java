@@ -1,7 +1,7 @@
 package com.example.gaofeng.tulingdemo.recognization;
 
 /**
- * Created by fujiayi on 2017/6/14.
+ * Created by gaofeng on 2018/4/4
  */
 
 import android.util.Log;

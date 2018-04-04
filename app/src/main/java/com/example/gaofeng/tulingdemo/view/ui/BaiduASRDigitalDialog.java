@@ -43,7 +43,7 @@ import java.util.ResourceBundle;
 /**
  * 语音识别对话框
  *
- * @author yangliang02
+ * Created by gaofeng on 2018/4/4
  */
 @SuppressLint("Registered")
 public class BaiduASRDigitalDialog extends BaiduASRDialog {

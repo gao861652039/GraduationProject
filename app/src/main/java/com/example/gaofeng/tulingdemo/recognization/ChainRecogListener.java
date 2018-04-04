@@ -4,7 +4,7 @@ package com.example.gaofeng.tulingdemo.recognization;
 import java.util.ArrayList;
 
 /**
- * Created by fujiayi on 2017/10/18.
+ * Created by gaofeng on 2018/4/4
  */
 
 public class ChainRecogListener implements IRecogListener {

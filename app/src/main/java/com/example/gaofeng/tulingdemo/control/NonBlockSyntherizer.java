@@ -9,7 +9,7 @@ import android.os.Message;
 /**
  * 在新线程中调用initTTs方法。防止UI柱塞
  * <p>
- * Created by fujiayi on 2017/5/24.
+ * Created by gaofeng on 2018/4/4
  */
 
 public class NonBlockSyntherizer extends MySyntherizer {

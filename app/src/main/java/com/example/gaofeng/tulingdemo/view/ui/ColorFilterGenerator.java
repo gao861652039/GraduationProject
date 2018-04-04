@@ -5,10 +5,8 @@ import android.graphics.ColorMatrix;
 /**
  * 通过指定一些颜色属性的值，调整一个颜色矩阵。可用于基于一套主题，在程序中动态生成多套不同色调的主题
  * <p>
- * Created by weilikai01 on 2014/12/3.
+ * Created by gaofeng on 2018/4/4
  *
- * @see http://groups.google.com/group/android-developers/browse_thread/thread/9e215c83c3819953
- * @see http://gskinner.com/blog/archives/2007/12/colormatrix_cla.html
  */
 public class ColorFilterGenerator {
 

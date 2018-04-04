@@ -8,7 +8,7 @@ import com.example.gaofeng.tulingdemo.recognization.CommonRecogParams;
 import java.util.Arrays;
 
 /**
- * Created by fujiayi on 2017/6/24.
+ * Created by gaofeng on 2018/4/4
  */
 
 public class AllRecogParams extends CommonRecogParams {

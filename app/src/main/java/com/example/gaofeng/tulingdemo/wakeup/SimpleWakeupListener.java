@@ -2,7 +2,7 @@ package com.example.gaofeng.tulingdemo.wakeup;
 import com.example.gaofeng.tulingdemo.util.Logger;
 
 /**
- * Created by fujiayi on 2017/6/21.
+ * Created by gaofeng on 2018/4/4
  */
 
 public class SimpleWakeupListener implements IWakeupListener {

@@ -11,7 +11,7 @@ import android.widget.TextView;
 /**
  * 识别对话框提示语列表。使用bdspeech_suggestion_item布局文件，支持{@link #setTextColor(int)}设置字体颜色
  *
- * @author yangliang02
+ * Created by gaofeng on 2018/4/4
  */
 class TipsAdapter extends ArrayAdapter<String> {
     private int mTextColor;

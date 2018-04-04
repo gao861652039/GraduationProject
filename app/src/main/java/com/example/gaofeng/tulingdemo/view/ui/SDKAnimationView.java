@@ -15,7 +15,7 @@ import android.view.View;
 /**
  * 音量反馈动画类，动画分为三个步骤(preparing, recording, recognizing)
  *
- * @author liuxi04
+ * Created by gaofeng on 2018/4/4
  */
 public class SDKAnimationView extends View {
     public static final int SAMPE_RATE_VOLUME = 50;

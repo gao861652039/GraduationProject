@@ -11,7 +11,7 @@ import static android.content.ContentValues.TAG;
 
 
 /**
- * Created by fujiayi on 2017/5/19.
+ * Created by gaofeng on 2018/4/4
  */
 
 public class OfflineResource {

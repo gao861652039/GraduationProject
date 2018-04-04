@@ -1,7 +1,7 @@
 package com.example.gaofeng.tulingdemo.wakeup;
 
 /**
- * Created by fujiayi on 2017/6/21.
+ * Created by gaofeng on 2018/4/4
  */
 
 public interface IWakeupListener {

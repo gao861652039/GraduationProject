@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by fujiayi on 2017/6/20.
+ * Created by gaofeng on 2018/4/4
  */
 
 public class CommonRecogParams {

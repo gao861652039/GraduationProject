@@ -5,7 +5,7 @@ import android.app.Application;
 import com.baidu.mapapi.SDKInitializer;
 
 /**
- * Created by fujiayi on 2017/10/18.
+ * Created by gaofeng on 2018/4/4
  */
 
 public class SimpleTransApplication extends Application {

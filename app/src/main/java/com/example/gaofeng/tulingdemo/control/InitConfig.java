@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * 合成引擎的初始化参数
  * <p>
- * Created by fujiayi on 2017/9/13.
+ * Created by gaofeng on 2018/4/4
  */
 
 public class InitConfig {

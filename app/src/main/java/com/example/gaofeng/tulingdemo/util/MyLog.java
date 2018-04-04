@@ -3,9 +3,7 @@ package com.example.gaofeng.tulingdemo.util;
 import android.util.Log;
 
 /**
-	 * 只有当isDebue() return true时，logcat 里面才能看到 error以下级别日志，如verbose,DEBUG, INFO, WARN;
-	 * error始终打印在 logcat 里和 logback错误文件中.
-	 * @author dongfang
+     * Created by gaofeng on 2018/4/4
 	 *
 	 */
 public class MyLog {

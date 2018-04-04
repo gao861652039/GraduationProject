@@ -8,7 +8,7 @@ import com.example.gaofeng.tulingdemo.view.activity.MainHandlerConstant;
 
 /**
  * SpeechSynthesizerListener 简单地实现，仅仅记录日志
- * Created by fujiayi on 2017/5/19.
+ * Created by gaofeng on 2018/4/4
  */
 
 public class MessageListener implements SpeechSynthesizerListener, MainHandlerConstant {

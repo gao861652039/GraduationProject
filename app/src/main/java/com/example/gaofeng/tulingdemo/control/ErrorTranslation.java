@@ -3,7 +3,7 @@ package com.example.gaofeng.tulingdemo.control;
 import android.speech.SpeechRecognizer;
 
 /**
- * Created by fujiayi on 2017/6/14.
+ * Created by gaofeng on 2018/4/4
  */
 
 public class ErrorTranslation {

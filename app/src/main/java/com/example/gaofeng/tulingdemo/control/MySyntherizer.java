@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * 该类是对SpeechSynthesizer的封装
  * <p>
- * Created by fujiayi on 2017/5/24.
+ * Created by gaofeng on 2018/4/4
  */
 
 public class MySyntherizer implements MainHandlerConstant {

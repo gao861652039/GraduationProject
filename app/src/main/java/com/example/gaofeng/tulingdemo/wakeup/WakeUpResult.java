@@ -7,7 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by fujiayi on 2017/6/24.
+ * Created by gaofeng on 2018/4/4
  */
 public class WakeUpResult {
     private String name;

@@ -7,7 +7,7 @@ import com.example.gaofeng.tulingdemo.recognization.IStatus;
 
 
 /**
- * Created by fujiayi on 2017/9/21.
+ * Created by gaofeng on 2018/4/4
  */
 
 public class RecogWakeupListener extends SimpleWakeupListener implements IStatus {
