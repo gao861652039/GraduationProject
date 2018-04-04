@@ -9,6 +9,8 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -20,6 +22,7 @@ import com.baidu.tts.client.SpeechSynthesizer;
 import com.baidu.tts.client.SpeechSynthesizerListener;
 import com.baidu.tts.client.TtsMode;
 import com.example.gaofeng.tulingdemo.R;
+import com.example.gaofeng.tulingdemo.adapter.RobotChatAdapter;
 import com.example.gaofeng.tulingdemo.control.InitConfig;
 import com.example.gaofeng.tulingdemo.control.MyRecognizer;
 import com.example.gaofeng.tulingdemo.control.MySyntherizer;
@@ -27,6 +30,7 @@ import com.example.gaofeng.tulingdemo.control.NonBlockSyntherizer;
 import com.example.gaofeng.tulingdemo.listener.UiMessageListener;
 import com.example.gaofeng.tulingdemo.model.bean.DishBean;
 import com.example.gaofeng.tulingdemo.model.bean.NewsBean;
+import com.example.gaofeng.tulingdemo.model.bean.RobotChatBean;
 import com.example.gaofeng.tulingdemo.model.bean.SpeechKnownBean;
 import com.example.gaofeng.tulingdemo.model.bean.TextBean;
 import com.example.gaofeng.tulingdemo.model.bean.UrlBean;
@@ -71,12 +75,8 @@ import static com.example.gaofeng.tulingdemo.recognization.IStatus.STATUS_NONE;
 
 public class MainActivity extends AppCompatActivity {
     //API key :  daedd0780ee042a49d1cf67342201081
-    @BindView(R.id.et_user_info)
-    EditText et_user_info;
-    @BindView(R.id.tv_homelife)
-    TextView tv_homelife;
-    private List<String> list = new ArrayList<>();
-    private List<String> list2 = new ArrayList<>();
+    @BindView(R.id.recycle_view_main)
+    RecyclerView recycle_view_main;
     private Retrofit retrofit = NetWorkUtil.getInstance().getRetrofit();
     private String key = NetWorkUtil.getInstance().getKey();
     private Call<ResponseBody> call;
@@ -132,18 +132,27 @@ public class MainActivity extends AppCompatActivity {
     // 主控制类，所有合成控制方法从这个类开始
     protected MySyntherizer synthesizer;
 
+    private RobotChatBean robotChatBean;
+    private List<RobotChatBean> list = new ArrayList<>();
+    private RobotChatAdapter adapter;
+
     //语音识别handler
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (et_user_info != null && msg.obj != null) {
+            if (null != msg.obj) {
                 if (msg.obj.toString().contains("final_result")) {
                     String str = msg.obj.toString();
                     String json = str.substring(str.indexOf("{"), str.lastIndexOf("}") + 1);
                     SpeechKnownBean speechKnownBean = new Gson().fromJson(json, SpeechKnownBean.class);
-                    et_user_info.setText(speechKnownBean.getBest_result());
-                    searchHomeLife(null);
+                    robotChatBean = new RobotChatBean();
+                    robotChatBean.setTextType(1);
+                    robotChatBean.setChat_text(speechKnownBean.getBest_result());
+                    list.add(robotChatBean);
+                    adapter.addChat(list);
+                    info = speechKnownBean.getBest_result();
+                    getResult();
                 }
             }
         }
@@ -163,6 +172,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        robotChatBean = new RobotChatBean();
+        robotChatBean.setChat_text("请问有什么能帮到您？");
+        robotChatBean.setTextType(0);
+        list.add(robotChatBean);
+        adapter = new RobotChatAdapter(this, list);
+        recycle_view_main.setLayoutManager(new LinearLayoutManager(this));
+        recycle_view_main.setAdapter(adapter);
         initRecog();
         initialTts();
     }
@@ -273,8 +289,8 @@ public class MainActivity extends AppCompatActivity {
         // 在BaiduASRDialog中读取, 因此需要用 SimpleTransApplication传递input参数
         ((SimpleTransApplication) getApplicationContext()).setDigitalDialogInput(input);
 
-        // 修改对话框样式
-        // intent.putExtra(BaiduASRDigitalDialog.PARAM_DIALOG_THEME, BaiduASRDigitalDialog.THEME_ORANGE_DEEPBG);
+
+        intent.putExtra(BaiduASRDigitalDialog.PARAM_DIALOG_THEME, BaiduASRDigitalDialog.THEME_ORANGE_DEEPBG);
 
         running = true;
         startActivityForResult(intent, 2);
@@ -321,15 +337,6 @@ public class MainActivity extends AppCompatActivity {
         synthesizer.stop();
     }
 
-    @OnClick(R.id.btn_search)
-    public void searchHomeLife(View view) {
-
-        this.info = et_user_info.getText().toString();
-        if (null != info) {
-            getResult();
-        }
-
-    }
 
     @OnClick(R.id.speak_button)
     public void speak(View view) {
@@ -356,13 +363,11 @@ public class MainActivity extends AppCompatActivity {
                             case 100000:
                                 //文本类解析
                                 TextBean textBean = gson.fromJson(text, TextBean.class);
-//                            tv_homelife.setText(textBean.getText());
-                                FragmentManager fm = getSupportFragmentManager();
-                                FragmentTransaction transaction = fm.beginTransaction();
-                                TextFragment tf = new TextFragment();
-                                transaction.replace(R.id.container, tf);
-                                transaction.commitAllowingStateLoss();
-                                EventBus.getDefault().postSticky(new TextMsg(textBean.getText()));
+                                robotChatBean = new RobotChatBean();
+                                robotChatBean.setTextType(0);
+                                robotChatBean.setChat_text(textBean.getText());
+                                list.add(robotChatBean);
+                                adapter.addChat(list);
                                 speak(textBean.getText());
 
                                 break;
@@ -386,7 +391,6 @@ public class MainActivity extends AppCompatActivity {
                             case 200000:
                                 //链接类解析
                                 UrlBean urlBean = gson.fromJson(text, UrlBean.class);
-                                tv_homelife.setText(urlBean.getUrl());
                                 EventBus.getDefault().postSticky(new UrlMsg(urlBean.getUrl()));
                                 startActivity(new Intent(MainActivity.this, NewsWebViewActivity.class));
                                 break;

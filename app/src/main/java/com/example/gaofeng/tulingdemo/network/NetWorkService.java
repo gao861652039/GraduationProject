@@ -20,9 +20,10 @@ public interface NetWorkService {
     //需要地址类请求1
     @POST("api")
     Call<ResponseBody> getUrlInfo1(@Query("key") String key,
-                                  @Query("info") String info,
-                                  @Query("loc") String loc,
-                                  @Query("userid") String userid);
+                                   @Query("info") String info,
+                                   @Query("loc") String loc,
+                                   @Query("userid") String userid);
+
     @POST("api")
     Call<ResponseBody> getUrlInfo2(@Query("key") String key,
                                    @Query("info") String info,

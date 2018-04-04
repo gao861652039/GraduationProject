@@ -1,58 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.example.gaofeng.tulingdemo.view.activity.MainActivity">
 
-    <LinearLayout
-        android:id="@+id/ll"
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycle_view_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="visible">
+        android:layout_weight="10">
 
 
-        <EditText
-            android:id="@+id/et_user_info"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="0.8" />
-
-        <Button
-            android:id="@+id/btn_search"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="0.2"
-            android:text="查询" />
-    </LinearLayout>
-
-
-    <TextView
-        android:id="@+id/tv_homelife"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/ll"
-        android:text="Hello World!"
-        android:visibility="visible" />
-
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true">
-
-    </FrameLayout>
+    </android.support.v7.widget.RecyclerView>
 
 
     <Button
         android:id="@+id/speak_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="开始说话"
-        />
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.1"
+        android:text="开始说话" />
 
 
-</RelativeLayout>
+</LinearLayout>
