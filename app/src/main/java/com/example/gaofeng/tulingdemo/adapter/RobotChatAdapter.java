@@ -17,17 +17,19 @@ import java.util.List;
 public class RobotChatAdapter extends RecyclerView.Adapter<RobotChatAdapter.RobotChatView> {
     private Context context;
     private List<RobotChatBean> list;
+    private RecyclerView recyclerView;
 
-
-    public RobotChatAdapter(Context context, List<RobotChatBean> list) {
+    public RobotChatAdapter(Context context, List<RobotChatBean> list, RecyclerView recyclerView) {
         this.context = context;
         this.list = list;
+        this.recyclerView = recyclerView;
     }
 
     public void addChat(List<RobotChatBean> robotChatBean) {
         if (null != robotChatBean) {
             this.list = robotChatBean;
             notifyDataSetChanged();
+            recyclerView.scrollToPosition(list.size() - 1);
         }
     }
 

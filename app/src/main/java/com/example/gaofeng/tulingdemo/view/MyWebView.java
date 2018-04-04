@@ -25,7 +25,6 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 
-
 /**
  * gaofeng
  */
@@ -84,8 +83,6 @@ public class MyWebView extends WebView {
         });
         // 现在部分手机上会出现点击搜索框页面放大的情况，
         this.getSettings().setDefaultZoom(getZoomDensity(mContext));
-        this.setDownloadListener(new ExternalDownloadListener(mContext));
-
         this.getSettings().setDefaultZoom(getZoomDensity(mContext));
         this.setVerticalScrollBarEnabled(false);
         this.setHorizontalScrollBarEnabled(false);
@@ -103,21 +100,9 @@ public class MyWebView extends WebView {
 
     @Override
     public void loadUrl(String url) {
-        MyLog.debug(TAG, "url:" + url);
-        String ua = getSettings().getUserAgentString();
-        getSettings().setUserAgentString(ua + "type=bdvip_cli");
         super.loadUrl(url);
     }
 
-    /* (non-Javadoc)
-     * @see android.webkit.WebView#loadUrl(java.lang.String, java.util.Map)
-     */
-    @Override
-    public void loadUrl(String url, Map<String, String> additionalHttpHeaders) {
-        String ua = getSettings().getUserAgentString();
-        getSettings().setUserAgentString(ua + "type=bdvip_cli");
-        super.loadUrl(url, additionalHttpHeaders);
-    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -201,31 +186,4 @@ public class MyWebView extends WebView {
         }
     }
 
-    class ExternalDownloadListener implements DownloadListener {
-
-        private final String TAG = ExternalDownloadListener.class.getName();
-        private Context context;
-
-        public ExternalDownloadListener(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("ExternalDownloadListener.onDownloadStart(...)").append("\n");
-            sb.append("url                = ").append(url).append("\n");
-            sb.append("userAgent          = ").append(userAgent).append("\n");
-            sb.append("contentDisposition = ").append(contentDisposition).append("\n");
-            sb.append("mimetype           = ").append(mimetype).append("\n");
-            sb.append("contentLength      = ").append(contentLength);
-            Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-
-            try {
-                context.startActivity(viewIntent);
-            } catch (ActivityNotFoundException ex) {
-            }
-        }
-
-    }
 }

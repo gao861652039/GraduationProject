@@ -37,6 +37,8 @@ public class NewsWebViewActivity extends AppCompatActivity {
 
         myWebView.loadUrl(urlMsg.getUrl());
     }
-
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

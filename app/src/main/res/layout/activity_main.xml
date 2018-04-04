@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@mipmap/chat_background"
     android:orientation="vertical"
     tools:context="com.example.gaofeng.tulingdemo.view.activity.MainActivity">
 
@@ -22,10 +23,9 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.1"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/ic_mic"
-        />
+        android:layout_weight="0.1"
+        android:background="@drawable/ic_mic" />
 
 
 </LinearLayout>
