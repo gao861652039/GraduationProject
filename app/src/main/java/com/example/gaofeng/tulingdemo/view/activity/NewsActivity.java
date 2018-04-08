@@ -3,6 +3,7 @@ package com.example.gaofeng.tulingdemo.view.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -39,6 +40,7 @@ public class NewsActivity extends AppCompatActivity {
 
     }
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -50,19 +52,25 @@ public class NewsActivity extends AppCompatActivity {
         if (null != newsBean) {
 
             adapter = new NewsAdapter(this, newsBean.getList());
-            news_recycle.setLayoutManager(new LinearLayoutManager(this));
-            news_recycle.setAdapter(adapter);
+            news_recycle.setLayoutManager(new GridLayoutManager(this, 2));
+            if (null != adapter2) {
+                news_recycle.swapAdapter(adapter, true);
+            } else {
+                news_recycle.setAdapter(adapter);
+            }
+
             adapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
 
                     String url = newsBean.getList().get(position).getDetailurl();
-                    EventBus.getDefault().postSticky(new UrlMsg(url));
+                    EventBus.getDefault().postSticky(new UrlMsg(url, "新闻详情", newsBean.getList().get(position).getIcon()));
                     startActivity(new Intent(NewsActivity.this, NewsWebViewActivity.class));
                 }
             });
+            getSupportActionBar().setTitle("新闻列表");
 
-
+            EventBus.getDefault().removeStickyEvent(newsBean);
         } else {
             Toast.makeText(this, "暂无新闻", Toast.LENGTH_SHORT).show();
         }
@@ -73,20 +81,27 @@ public class NewsActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void getDishesEvent(final DishBean dishBean) {
         if (null != dishBean) {
+
             adapter2 = new DishesAdapter(this, dishBean.getList());
-            news_recycle.setLayoutManager(new LinearLayoutManager(this));
-            news_recycle.setAdapter(adapter2);
+            news_recycle.setLayoutManager(new GridLayoutManager(this, 2));
+            if (null != adapter) {
+                news_recycle.swapAdapter(adapter2, true);
+            } else {
+                news_recycle.setAdapter(adapter2);
+            }
             adapter2.setOnItemClickListener(new DishesAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
 
                     String url = dishBean.getList().get(position).getDetailurl();
-                    EventBus.getDefault().postSticky(new UrlMsg(url));
+                    EventBus.getDefault().postSticky(new UrlMsg(url, "菜品详情", dishBean.getList().get(position).getIcon()));
                     startActivity(new Intent(NewsActivity.this, NewsWebViewActivity.class));
                 }
             });
+            getSupportActionBar().setTitle("菜谱列表");
+            EventBus.getDefault().removeStickyEvent(dishBean);
         } else {
-            Toast.makeText(this, "暂无新闻", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "暂无菜谱", Toast.LENGTH_SHORT).show();
         }
     }
 

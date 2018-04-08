@@ -1,13 +1,19 @@
 package com.example.gaofeng.tulingdemo.view.activity;
 
 import android.Manifest;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -15,6 +21,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -32,6 +39,7 @@ import com.example.gaofeng.tulingdemo.control.MyRecognizer;
 import com.example.gaofeng.tulingdemo.control.MySyntherizer;
 import com.example.gaofeng.tulingdemo.control.NonBlockSyntherizer;
 import com.example.gaofeng.tulingdemo.listener.UiMessageListener;
+import com.example.gaofeng.tulingdemo.model.bean.ContactInfo;
 import com.example.gaofeng.tulingdemo.model.bean.DishBean;
 import com.example.gaofeng.tulingdemo.model.bean.NewsBean;
 import com.example.gaofeng.tulingdemo.model.bean.RobotChatBean;
@@ -156,6 +164,46 @@ public class MainActivity extends AppCompatActivity {
                     list.add(robotChatBean);
                     adapter.addChat(list);
                     info = speechKnownBean.getBest_result();
+
+                    //如果是发送的短信内容，必须写在最前面，防止短信内容里面出现关键词
+                    if (isMessage) {
+                        sendMessages(info);
+                        isMessage = false;
+                        return;
+                    }
+
+                    //关键词"打开"
+                    if (info.contains("打开")) {
+                        String appName = info.substring(info.indexOf("开") + 1);
+                        openApp(appName);
+                        return;
+                    }
+
+                    //关键词"打电话"
+                    if (info.contains("打电话")) {
+                        String tel = StringUtil.getPhoneNum(info);
+                        if (StringUtil.isEmpty(tel)) {
+                            call("");
+                        } else {
+                            call(tel);
+                        }
+                        return;
+                    }
+
+                    //关键词"发短信"
+                    if (info.contains("发短信")) {
+                        getSendMsgContactInfo();
+                        return;
+                    }
+
+                    //关键词"查找"
+                    if (info.contains("查找")) {
+                        String searchContent = info.substring(info.indexOf("找") + 1);
+
+                        surfTheInternet(searchContent);
+                        return;
+                    }
+
                     getResult();
                 }
             }
@@ -169,6 +217,10 @@ public class MainActivity extends AppCompatActivity {
             Log.e("msg", String.valueOf(msg.obj));
         }
     };
+
+    private boolean isMessage = false;//判断是否是短信内容的标志
+    private String msg_number;//发短信时的联系人电话
+    private String msg_name;//发短信时的联系人名字
 
 
     @Override
@@ -188,6 +240,149 @@ public class MainActivity extends AppCompatActivity {
         initialTts();
     }
 
+    //网上查找
+    private void surfTheInternet(String searchContent) {
+        refresh("已经为您上网查找" + "\"" + searchContent + "\"");
+
+        // 指定intent的action是ACTION_WEB_SEARCH就能调用浏览器
+        Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+        // 指定搜索关键字是选中的文本
+        intent.putExtra(SearchManager.QUERY, searchContent);
+        startActivity(intent);
+    }
+
+    //发送短信的内容
+    private void sendMessages(String content) {
+        if (msg_number == null) {
+            return;
+        }
+
+        SmsManager manager = SmsManager.getDefault();
+        ArrayList<String> list = manager.divideMessage(content);  //因为一条短信有字数限制，因此要将长短信拆分
+        for (String text : list) {
+            manager.sendTextMessage(msg_number, null, text, null, null);
+        }
+
+        refresh("已经发送" + "\"" + content + "\"" + "给" + msg_name);
+
+    }
+
+    //发送短信的联系人信息
+    private void getSendMsgContactInfo() {
+        List<ContactInfo> contactLists = getContactLists(this);
+        if (contactLists.isEmpty()) {
+            refresh("通讯录为空");
+            return;
+        }
+        for (ContactInfo contactInfo : contactLists) {
+            if (info.contains(contactInfo.getName())) {
+                msg_name = contactInfo.getName();
+                msg_number = contactInfo.getNumber();
+                refresh("请问您要发送什么给" + msg_name);
+                isMessage = true;
+                return;
+            }
+        }
+
+        if (StringUtil.isEmpty(msg_name) && !StringUtil.isEmpty(StringUtil.getPhoneNum(info))) {
+            msg_name = StringUtil.getPhoneNum(info);
+            msg_number = StringUtil.getPhoneNum(info);
+            refresh("请问您要发送什么给" + msg_name);
+            isMessage = true;
+            return;
+        }
+        refresh("通讯录中没有此人");
+    }
+
+
+    //获取通信录中所有的联系人
+    private List<ContactInfo> getContactLists(Context context) {
+        List<ContactInfo> lists = new ArrayList<ContactInfo>();
+        Cursor cursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                null, null, null, null);
+        //moveToNext方法返回的是一个boolean类型的数据
+        while (cursor.moveToNext()) {
+            //读取通讯录的姓名
+            String name = cursor.getString(cursor
+                    .getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+            //读取通讯录的号码
+            String number = cursor.getString(cursor
+                    .getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            ContactInfo contactInfo = new ContactInfo(name, number);
+            lists.add(contactInfo);
+        }
+        return lists;
+    }
+
+
+    //打电话
+    private void call(String tel) {
+        List<ContactInfo> contactLists = getContactLists(this);
+        if (contactLists.isEmpty()) {
+            refresh("通讯录为空");
+            return;
+        }
+        for (ContactInfo contactInfo : contactLists) {
+            if (!StringUtil.isEmpty(tel)) {
+
+                refresh("正在拨打" + tel);
+                Intent intent = new Intent();
+                intent.setAction("android.intent.action.CALL");
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                intent.setData(Uri.parse("tel:" + tel));
+                startActivity(intent);
+                return;
+            }
+
+            if (info.contains(contactInfo.getName())) {
+                refresh("已经为您拨通" + contactInfo.getName() + "的电话");
+                String number = contactInfo.getNumber();
+                Intent intent = new Intent();
+                intent.setAction("android.intent.action.CALL");
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                intent.setData(Uri.parse("tel:" + number));
+                startActivity(intent);
+                return;
+            }
+        }
+
+        refresh("通讯录中没有此人");
+
+    }
+
+
+    //打开应用
+    private void openApp(String appName) {
+        PackageManager packageManager = MainActivity.this.getPackageManager();
+        // 获取手机里的应用列表
+        List<PackageInfo> pInfo = packageManager.getInstalledPackages(0);
+        for (int i = 0; i < pInfo.size(); i++) {
+            PackageInfo p = pInfo.get(i);
+            // 获取相关包的<application>中的label信息，也就是-->应用程序的名字
+            String label = packageManager.getApplicationLabel(p.applicationInfo).toString();
+            Log.d("tag", label);
+            if (label.equals(appName)) { //比较label
+                refresh(appName + "已经为您打开");
+                String pName = p.packageName; //获取包名
+                //获取intent
+                Intent intent = packageManager.getLaunchIntentForPackage(pName);
+                startActivity(intent);
+                return;
+            }
+        }
+        refresh("您没有安装该应用");
+    }
+
+    //刷新页面
+    private void refresh(String content) {
+        robotChatBean = new RobotChatBean();
+        robotChatBean.setTextType(0);
+        robotChatBean.setChat_text(content);
+        list.add(robotChatBean);
+        adapter.addChat(list);
+        speak(content);
+    }
+
 
     /**
      * android 6.0 以上需要动态申请权限
@@ -203,7 +398,11 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_WIFI_STATE,
                 Manifest.permission.CHANGE_WIFI_STATE,
                 Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.ACCESS_NETWORK_STATE
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.READ_CONTACTS,
+                Manifest.permission.CALL_PHONE,
+                Manifest.permission.SEND_SMS,
+                Manifest.permission.READ_SMS
         };
 
         ArrayList<String> toApplyList = new ArrayList<String>();
@@ -363,18 +562,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         synthesizer.release();
+        myRecognizer.release();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         synthesizer.stop();
+        myRecognizer.stop();
     }
 
 
     @OnClick(R.id.speak_button)
     public void speak(View view) {
         synthesizer.stop();
+        myRecognizer.stop();
         start();
     }
 
@@ -426,7 +628,13 @@ public class MainActivity extends AppCompatActivity {
                             case 200000:
                                 //链接类解析
                                 UrlBean urlBean = gson.fromJson(text, UrlBean.class);
-                                EventBus.getDefault().postSticky(new UrlMsg(urlBean.getUrl()));
+                                robotChatBean = new RobotChatBean();
+                                robotChatBean.setTextType(0);
+                                robotChatBean.setChat_text(urlBean.getText());
+                                list.add(robotChatBean);
+                                adapter.addChat(list);
+                                speak(urlBean.getText());
+                                EventBus.getDefault().postSticky(new UrlMsg(urlBean.getUrl(), urlBean.getText(), ""));
                                 startActivity(new Intent(MainActivity.this, NewsWebViewActivity.class));
                                 break;
                         }
