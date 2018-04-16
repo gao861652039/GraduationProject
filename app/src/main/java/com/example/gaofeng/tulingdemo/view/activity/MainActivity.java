@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
     protected String secretKey = "jTfb3xWWtcIGs1z20U0Ec6xUf16aOY2v";
 
     // TtsMode.MIX; 离在线融合，在线优先； TtsMode.ONLINE 纯在线； 没有纯离线
-    protected TtsMode ttsMode = TtsMode.MIX;
+    protected TtsMode ttsMode = TtsMode.ONLINE;
 
     // 离线发音选择，VOICE_FEMALE即为离线女声发音。
     // assets目录下bd_etts_common_speech_m15_mand_eng_high_am-mix_v3.0.0_20170505.dat为离线男声模型；

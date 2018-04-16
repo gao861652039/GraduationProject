@@ -69,7 +69,7 @@
             android:name=".view.activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize|locale|fontScale|layoutDirection"
             android:launchMode="standard"
-            android:screenOrientation="portrait">
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -81,7 +81,6 @@
             android:name=".view.ui.BaiduASRDigitalDialog"
             android:configChanges="orientation|keyboardHidden|screenLayout"
             android:exported="false"
-            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Dialog">
             <intent-filter>
                 <action android:name="com.baidu.action.RECOGNIZE_SPEECH" />
@@ -93,13 +92,11 @@
         <activity
             android:name=".view.activity.NewsActivity"
             android:configChanges="orientation|keyboardHidden|screenSize|locale|fontScale|layoutDirection"
-            android:launchMode="standard"
-            android:screenOrientation="portrait"></activity>
+            android:launchMode="standard"></activity>
         <activity
             android:name=".view.activity.NewsWebViewActivity"
             android:configChanges="orientation|keyboardHidden|screenSize|locale|fontScale|layoutDirection"
             android:launchMode="standard"
-            android:screenOrientation="portrait"
             android:theme="@style/ActivityTheme"></activity>
     </application>
 
